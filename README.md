@@ -34,16 +34,28 @@ A GPS location capture feature has been added.</p>
 # Installing and requirements
 <p>This tool require PHP for webserver, and wget for downloading dependencies. First run following command on your terminal</p>
 
+### For Linux
+```
+apt update && apt upgrade -y 
+```
 ```
 apt-get -y install php wget unzip && apt-get -y install bash 
+```
+### For Termux
+```
+pkg update && pkg upgrade -y 
+```
+```
+pkg-get -y install php wget unzip && pkg-get -y install bash 
 ```
 
 ## Installing (Kali Linux/Termux):
 
 ```
 git clone https://github.com/Zeeshan-Ali78/Camtry.git
-cd CamPhish
-bash camphish.sh
+cd Camtry
+chmod +x camtry.sh
+bash camtry.sh
 ```
 
 ## Clean logs & unnecessary files :
