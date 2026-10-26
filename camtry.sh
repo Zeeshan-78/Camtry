@@ -1,6 +1,6 @@
 #!/bin/bash
 # CamTry v1.0 
-# Powered by Zeeshan Ali 
+# Powered by Zeeshan Ali
 
 # Windows compatibility check
 if [[ "$(uname -a)" == *"MINGW"* ]] || [[ "$(uname -a)" == *"MSYS"* ]] || [[ "$(uname -a)" == *"CYGWIN"* ]] || [[ "$(uname -a)" == *"Windows"* ]]; then
