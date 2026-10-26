@@ -52,11 +52,18 @@ pkg-get -y install php wget unzip && pkg-get -y install bash
 ## Installing (Kali Linux/Termux):
 
 ```
-git clone https://github.com/Zeeshan-Ali78/Camtry.git
+git clone https://github.com/Zeeshan-78/Camtry.git
+```
+```
 cd Camtry
+```
+```
 chmod +x camtry.sh
+```
+```
 bash camtry.sh
 ```
+
 
 ## Clean logs & unnecessary files :
 
